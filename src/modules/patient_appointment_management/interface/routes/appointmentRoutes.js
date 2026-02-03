@@ -30,7 +30,7 @@ router.get("/appointment/:id", getAppointmentById);
 router.post(
   "/",
   authMiddleware,
-  // requireActiveSubscription,
+  requireActiveSubscription,
   requireUser,
   createAppointment,
 );
