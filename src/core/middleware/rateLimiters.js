@@ -2,8 +2,8 @@ import rateLimit from "express-rate-limit";
 import AppError from "../errors/AppError.js";
 
 export const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 10 attempts per IP per window
+  windowMs: 5 * 60 * 1000, // 15 minutes
+  max: 100, // 10 attempts per IP per window
   standardHeaders: true,
   legacyHeaders: false,
 
@@ -12,8 +12,8 @@ export const loginLimiter = rateLimit({
       new AppError(
         "Too many login attempts. Try again later.",
         429,
-        "RATE_LIMITED"
-      )
+        "RATE_LIMITED",
+      ),
     );
   },
 });

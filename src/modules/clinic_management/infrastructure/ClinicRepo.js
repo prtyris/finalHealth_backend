@@ -71,7 +71,7 @@ export default class ClinicRepo extends IClinicRepository {
   ============================ */
   async findPendingVerification() {
     const result = await db.query(
-      `SELECT * FROM clinics WHERE verification_status='Pending'`
+      `SELECT * FROM clinics WHERE verification_status='Pending'`,
     );
 
     return result.rows.map((row) => this._toEntity(row));
@@ -243,7 +243,70 @@ WHERE dc.doctor_id = $1
     return rows[0] || null;
   }
 
+  // async createClinicSession(clinicId, sessionData) {
+  //   const query = `
+  //   INSERT INTO clinic_schedules (
+  //     clinic_id,
+  //     day_of_week,
+  //     open_time,
+  //     close_time
+  //   )
+  //   VALUES ($1, $2, $3, $4)
+  //   RETURNING
+  //     clinic_schedule_id,
+  //     clinic_id,
+  //     day_of_week,
+  //     open_time,
+  //     close_time,
+  //     created_at;
+  // `;
+
+  //   const { rows } = await db.query(query, [
+  //     clinicId,
+  //     sessionData.day_of_week,
+  //     sessionData.open_time,
+  //     sessionData.close_time,
+  //   ]);
+
+  //   return rows[0];
+  // }
+
   async createClinicSession(clinicId, sessionData) {
+    const { day_of_week, open_time, close_time } = sessionData;
+
+    // 1️⃣ Basic Time Validation
+    if (!open_time || !close_time) {
+      throw new Error("Open time and close time are required.");
+    }
+
+    if (open_time >= close_time) {
+      throw new Error("Open time must be earlier than close time.");
+    }
+
+    // 2️⃣ Check for overlapping sessions
+    const overlapCheckQuery = `
+    SELECT 1
+    FROM clinic_schedules
+    WHERE clinic_id = $1
+      AND day_of_week = $2
+      AND (
+        ($3 < close_time AND $4 > open_time)
+      )
+    LIMIT 1;
+  `;
+
+    const overlapResult = await db.query(overlapCheckQuery, [
+      clinicId,
+      day_of_week,
+      open_time,
+      close_time,
+    ]);
+
+    if (overlapResult.rows.length > 0) {
+      throw new Error("This schedule overlaps with an existing session.");
+    }
+
+    // 3️⃣ Insert if valid
     const query = `
     INSERT INTO clinic_schedules (
       clinic_id,
@@ -263,9 +326,9 @@ WHERE dc.doctor_id = $1
 
     const { rows } = await db.query(query, [
       clinicId,
-      sessionData.day_of_week,
-      sessionData.open_time,
-      sessionData.close_time,
+      day_of_week,
+      open_time,
+      close_time,
     ]);
 
     return rows[0];

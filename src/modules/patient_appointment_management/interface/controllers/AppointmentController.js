@@ -38,7 +38,7 @@ const appointmentService = new AppointmentService(
   priorityRepo,
   doctorSessionRepo,
   factory,
-  eventBus // ✅ inject event bus, NOT audit
+  eventBus, // ✅ inject event bus, NOT audit
 );
 
 // ============================================================
@@ -64,7 +64,7 @@ export const rescheduleAppointment = asyncHandler(async (req, res) => {
 
   const appointment = await appointmentService.rescheduleAppointment(
     dto,
-    req.user
+    req.user,
   );
 
   return sendSuccess(res, {
@@ -81,7 +81,7 @@ export const cancelAppointment = asyncHandler(async (req, res) => {
 
   const appointment = await appointmentService.cancelAppointment(
     appointmentId,
-    req.user
+    req.user,
   );
 
   return sendSuccess(res, {
@@ -98,7 +98,7 @@ export const completeAppointment = asyncHandler(async (req, res) => {
 
   const appointment = await appointmentService.completeAppointment(
     appointmentId,
-    req.user
+    req.user,
   );
 
   return sendSuccess(res, {
@@ -118,7 +118,7 @@ export const listAppointmentsByDate = asyncHandler(async (req, res) => {
   const appointments = await appointmentService.listAppointmentsByDateRange(
     clinicId,
     fromDate,
-    toDate
+    toDate,
   );
 
   return sendSuccess(res, { data: { appointments } });
@@ -127,9 +127,8 @@ export const listAppointmentsByDate = asyncHandler(async (req, res) => {
 export const listAppointmentsByPatient = asyncHandler(async (req, res) => {
   const patientId = Number(req.params.patientId);
 
-  const appointments = await appointmentService.listAppointmentsByPatient(
-    patientId
-  );
+  const appointments =
+    await appointmentService.listAppointmentsByPatient(patientId);
 
   return sendSuccess(res, { data: { appointments } });
 });
@@ -149,7 +148,7 @@ export const listAllAppointmentsForDoctor = asyncHandler(async (req, res) => {
   const appointments =
     await appointmentService.listAllAppointmentsByDoctorAndClinic(
       doctorId,
-      clinicId
+      clinicId,
     );
 
   return sendSuccess(res, { data: { appointments } });
@@ -161,7 +160,7 @@ export const listTodayAppointments = asyncHandler(async (req, res) => {
 
   const appointments = await appointmentService.listTodayAppointments(
     doctorId,
-    clinicId
+    clinicId,
   );
 
   return sendSuccess(res, { data: { appointments } });
@@ -178,7 +177,7 @@ export const getAllAppointmentsOfDoctorInClinic = asyncHandler(
     const { allAppointments, todayAppointments } =
       await appointmentService.getAllAppointmentsOfDoctorInClinic(
         doctorId,
-        clinicId
+        clinicId,
       );
 
     return sendSuccess(res, {
@@ -188,5 +187,5 @@ export const getAllAppointmentsOfDoctorInClinic = asyncHandler(
         todayAppointments,
       },
     });
-  }
+  },
 );

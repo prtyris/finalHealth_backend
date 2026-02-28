@@ -11,7 +11,7 @@ export default class AuthTokenService {
         role: payload.role,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "30d" },
     );
   }
 

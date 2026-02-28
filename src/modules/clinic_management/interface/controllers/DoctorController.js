@@ -20,7 +20,7 @@ const doctorService = new DoctorManagementService(
   doctorRepo,
   clinicRepo,
   factory,
-  eventBus
+  eventBus,
 );
 
 export const registerDoctor = async (req, res) => {
@@ -108,7 +108,7 @@ export const getClinicsOfDoctor = async (req, res) => {
 export const getAllApprovedDoctorsOfUser = async (req, res) => {
   try {
     const doctors = await doctorService.getAllApprovedDoctorsOfUser(
-      req.user.id
+      req.user.id,
     );
     res.status(200).json({
       success: true,
@@ -142,7 +142,7 @@ export const getAllInfoOfDoctor = async (req, res) => {
 
     const doctors = await doctorService.getAllInfoOfDoctor(
       doctorId,
-      req.user.id
+      req.user.id,
     );
     res.status(200).json({
       success: true,
@@ -159,7 +159,7 @@ export const getAllInfoOfDoctor = async (req, res) => {
 export const updateDoctorInfo = asyncHandler(async (req, res) => {
   const sessions = await doctorService.updateDoctorInfo(
     Number(req.params.doctorId),
-    req.body
+    req.body,
   );
 
   return sendSuccess(res, {
